@@ -1,0 +1,7 @@
+PyQt6 --only-binary PyQt6
+commonroad-io
+commonroad-scenario-designer
+click<8.3.0
+lanelet2
+imageio
+opencv-python
