@@ -8,7 +8,7 @@ This step focuses on the topological structure of the map. You will correct lane
 
 1. Convert the map format
 
-Use the following command to convert the OSM map to a CommonRoad map:
+Use the following command to convert the OSM map to a CommonRoad map, and replace `example/src/map.osm` and `example/src/map_cr.xml` with the real path of your osm map file and commonroad map file:
 ```
 python osm2commonroad.py --osm-file example/src/map.osm --cr-file example/src/map_cr.xml
 ```

@@ -4,7 +4,7 @@ This step focuses on geometric accuracy. You will adjust lane boundary positions
 
 ## Procedure
 
-1. Convert the CommonRoad map to a Lanelet2 map using the following command. Note that the Lanelet2 output folder name must match the name used in the config file (e.g., `"fuller_huronPkwy"`).
+1. Convert the CommonRoad map to a Lanelet2 map using the following command. Note that the Lanelet2 output folder name must match the name used in the config file (e.g., `"fuller_huronPkwy"`). Please replace `example/src/USA_FullerRdHuronPkwy-94_1_T-1.xml` and `example/fuller_huronPkwy/lanelet2.osm` with the real path of your commonroad map file and lanelet2 map file.
 
 ```
 python commonroad2lanelet.py --cr-file example/src/USA_FullerRdHuronPkwy-94_1_T-1.xml --lanelet2-file example/fuller_huronPkwy/lanelet2.osm

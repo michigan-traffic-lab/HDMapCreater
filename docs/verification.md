@@ -26,9 +26,9 @@ Create the config file at `example/fuller_huronPkwy/configs.json` with the follo
 
 3. Visualize the map
 
-Run the following command to visualize the map in local coordinates (--google-maps-api-key is optional):
+Run the following command to visualize the map in local coordinates. replace `example/fuller_huronPkwy` with the real map folder path. Replace `<google_maps_api_key>` with your Google Maps API key, if you don't have one, delete `--google-maps-api-key <google_maps_api_key>`. And replace `example/fuller_huronPkwy.png` with the real path of the output image:
 ```
-python plot_map.py --map-path example/fuller_huronPkwy --google-maps-api-key ${google_maps_api_key} --output-file example/fuller_huronPkwy.png
+python plot_map.py --map-path example/fuller_huronPkwy --google-maps-api-key <google_maps_api_key> --output-file example/fuller_huronPkwy.png
 ```
 
 ![without_offset](../fig/verification/without_offset.png)
