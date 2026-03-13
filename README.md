@@ -7,10 +7,25 @@ The pipeline guides users through downloading OSM data, editing topological rela
 
 ## Installation
 
-On an Ubuntu system (versions 20.04, 22.04, or 24.04 all work), install [Miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install), then run the following commands:
+1. On an Ubuntu system (versions 20.04, 22.04, or 24.04 all work), install [Miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install).
+
+2. Install git:
 ```
+sudo apt update
+sudo apt install git
+```
+
+3. Clone the repo:
+```
+git clone https://github.com/michigan-traffic-lab/HDMapCreater.git
+```
+
+4. Run the following commands to install the necessary packages:
+```
+cd HDMapCreator
 conda create -n map python=3.10
 conda activate map
+sudo apt install libxcb-cursor0
 pip install -r requirements.txt
 ```
 
