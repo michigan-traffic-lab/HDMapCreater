@@ -56,9 +56,9 @@ def determine_xy_lim(map_obj) -> Tuple[List[float], List[float]]:
             }
         except Exception as e:
             print(f"Warning: Failed to calculate xy limits from map: {e}")
-            return [], [], [], [], [], []
+            return [], [], {}
     
-    return [], [], [], [], [], []
+    return [], [], {}
 
 
 parser = argparse.ArgumentParser()
