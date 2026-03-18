@@ -28,7 +28,7 @@ Open the CommonRoad map `map_cr.xml`.
 
 ![edit_branch](../fig/edit_topology/edit_branch.png)
 
-3. Check the lane count
+4. Check the lane count
 
 Cross-reference with the satellite view of Google Maps. If there are extra lanes, select each one and press `Del` to delete it.
 
@@ -38,7 +38,7 @@ If a lane is missing, select its adjacent lanelet and click ![add_adjacent_left]
 
 ![add_lanelet](../fig/edit_topology/add_lanelet.png)
 
-4. Check connections
+5. Check connections
 
 Cross-reference with the satellite view of Google Maps and delete any incorrect connections. Note that there may also be incorrect connections outside the intersection.
 
@@ -48,13 +48,13 @@ To add correct connections, open `Lanelet Operations`. Click the successor (the 
 
 ![add_connection](../fig/edit_topology/add_connection.png)
 
-5. Check the neighboring lanelets
+6. Check the neighboring lanelets
 
 Click each lanelet to verify that all its neighboring lanelets are correctly configured. You can do this by observing the highlighted lanelets or reading the legend. If any are incorrect, go to `Lanelet Attributes` → `Lanelet Attributes` → `Neighboring Lanelets`, select the correct lanelet ID, and click `Update`.
 
 ![update_neighboring_lanelet](../fig/edit_topology/update_neighboring_lanelet.png)
 
-6. Add crosswalks
+7. Add crosswalks
 
 Open "Add Lanelet", choose "Place at position", then choose "select end pos".
 
@@ -64,7 +64,7 @@ Click ![choose_point](../fig/edit_topology/choose_point.png) on the top and clic
 
 ![add_crosswalk](../fig/edit_topology/add_crosswalk.png)
 
-7. Save the map
+8. Save the map
 
 Press `Ctrl + S` to save. Upon completion, the output should look like this:
 
