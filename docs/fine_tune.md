@@ -115,7 +115,7 @@ First, add a regulatory element for each traffic light and its corresponding sto
   </relation>
 ```
 
-Next, add the regulatory element to each lane that must obey the corresponding traffic light:
+Next, add the regulatory element to the lanes that are connected with stop lines and must obey the corresponding traffic light:
 
 ```
   <relation id='127' action='modify' visible='true' version='1'>
