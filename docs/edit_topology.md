@@ -24,6 +24,10 @@ Open the CommonRoad map `map_cr.xml`.
 
 ![crdesigner](../fig/edit_topology/crdesigner.png)
 
+3. If you find that one of the branches is missing, please open the origianl OSM map file `map.osm` using [JOSM](https://josm.openstreetmap.de/). Then click the missing branch, set the "Highway" key to "secondary". Add or set "lanes" to correct number. Add or set "lanes:forward" to the number of the lanes that is heading to the same direction as the arrow of the missing branch. Add or set "lanes:backward" to the number of the lanes heading to the opposite direction. Then following step 1 to convert it to commonroad map again.
+
+![edit_branch](../fig/edit_topology/edit_branch.png)
+
 3. Check the lane count
 
 Cross-reference with the satellite view of Google Maps. If there are extra lanes, select each one and press `Del` to delete it.
