@@ -121,7 +121,7 @@ Next, add the regulatory element to the lanes that are connected with stop lines
   <relation id='127' action='modify' visible='true' version='1'>
     <member type='way' ref='126' role='right' />
     <member type='way' ref='120' role='left' />
-    <member type='relation' ref='1030' role='regulatory_element' />
+    <member type='relation' ref='1030' role='regulatory_element' />  <!-- add the corresponding regulatory element to lanelet here -->
     <tag k='location' v='urban' />
     <tag k='subtype' v='road' />
     <tag k='type' v='lanelet' />
