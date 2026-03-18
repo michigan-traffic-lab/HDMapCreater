@@ -60,7 +60,7 @@ Click ![choose_point](../fig/edit_topology/choose_point.png) on the top and clic
 
 ![add_crosswalk](../fig/edit_topology/add_crosswalk.png)
 
-6. Save the map
+7. Save the map
 
 Press `Ctrl + S` to save. Upon completion, the output should look like this:
 
