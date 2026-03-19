@@ -42,7 +42,7 @@ Click and drag lane boundaries and nodes to align them with the satellite map. I
 
 7. Smooth the turning lanelets
 
-Add or remove nodes to make turning lanelets smooth. For right-turn lanelets, align the right boundaries with the road edges. For left-turn lanelets, ensure the shape looks reasonable.
+Add or remove nodes to make turning lanelets smooth. For right-turn lanelets, align the right boundaries with the road edges. For left-turn lanelets, ensure the shape looks reasonable. To highlight the boundaries of a lanelet, you can click the lanelet in the second window on the right or double click the lanelet in the bottom window on the right.
 
 ![turning_lanelets](../fig/fine_tune/turning_lanelets.png)
 
