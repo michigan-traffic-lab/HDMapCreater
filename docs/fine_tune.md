@@ -128,6 +128,9 @@ Next, add the regulatory element to the lanes that are connected with stop lines
   </relation>
 ```
 
+11. After completing editing, check the lanelet list at the right bottom corner. If there are some lanelets consisting of 0 or 1 member, delete them.
+
+
 ## Precautions
 
 1. Sometimes, a single node is split into two overlapping nodes at the same location that are not connected, as shown below (one node has been moved slightly for clarity). To fix this, click ![draw_nodes](../fig/fine_tune/draw_nodes.png) (`Draw nodes`), click one of the duplicate nodes, and then click the other to connect them.
@@ -141,5 +144,3 @@ Next, add the regulatory element to the lanes that are connected with stop lines
 3. Never check "Upload" when saving the file.
 
 ![uncheck_upload](../fig/fine_tune/uncheck_upload.png)
-
-4. After completing editing, check the lanelet list at the right bottom corner. If there are some lanelets consisting of 0 or 1 member, delete them.
