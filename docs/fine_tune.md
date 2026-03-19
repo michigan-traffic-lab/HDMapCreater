@@ -141,3 +141,5 @@ Next, add the regulatory element to the lanes that are connected with stop lines
 3. Never check "Upload" when saving the file.
 
 ![uncheck_upload](../fig/fine_tune/uncheck_upload.png)
+
+4. After completing editing, check the lanelet list at the right bottom corner. If there are some lanelets consisting of 0 or 1 member, delete them.
