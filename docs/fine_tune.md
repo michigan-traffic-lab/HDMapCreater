@@ -60,7 +60,7 @@ You can add them as boundaries by clicking ![draw_nodes](../fig/fine_tune/draw_n
 
 ![add_new_way_using_ui](../fig/fine_tune/add_new_way_using_ui.png)
 
-To work around this, add boundaries directly in the raw OSM file (line 1565 - 1569):
+To work around this, add a new boundary directly in the raw OSM file (line 1565 - 1569). The 'id' must be a unique ID, which is different from all existing ID, including nodes, ways (boundaries), and relationships (lanelets). The 'nd' represent the nodes that consist of the boundary. You need to change the value of 'ref' to the correct node ID. The "type" should be set to "traffic_light".
 ```
 <way id='1023' action='modify' visible='true' version='1'>
     <nd ref='20' />
@@ -69,7 +69,7 @@ To work around this, add boundaries directly in the raw OSM file (line 1565 - 15
   </way>
 ```
 
-After the new traffic lights are added, set the "type" tag to "traffic_light". The traffic lights should consist of the end nodes of the lanelets approaching the intersection. When defining the way nodes, always order them from left to right. The way should align with the bottom edge of the stop line as seen in the satellite map, as shown in the following figure. The number of traffic light ways should match the number of distinct traffic signals at the intersection. For example, if there is a left-turn signal and a through signal, use three nodes to define two separate ways: the left and middle nodes cover the left-turn lane, and the middle and right nodes cover the remaining lanes:
+The traffic lights should consist of the end nodes of the lanelets approaching the intersection. When defining the way nodes, always order them from left to right. The way should align with the bottom edge of the stop line as seen in the satellite map, as shown in the following figure. The number of traffic light ways should match the number of distinct traffic signals at the intersection. For example, if there is a left-turn signal and a through signal, use three nodes to define two separate ways: the left and middle nodes cover the left-turn lane, and the middle and right nodes cover the remaining lanes:
 
 ```
   <way id='1029' action='modify' visible='true' version='1'>
@@ -104,7 +104,7 @@ The expected stop line looks like this:
 
 10. Add traffic rules
 
-First, add a regulatory element for each traffic light and its corresponding stop line:
+First, add a regulatory element for each traffic light and its corresponding stop line. Similar to the traffic light, the ID must be a unique ID. Change the value of "ref" to the IDs of corresponding stop line and traffic light.
 
 ```
   <relation id='1030' action='modify' visible='true' version='1'>
@@ -115,7 +115,7 @@ First, add a regulatory element for each traffic light and its corresponding sto
   </relation>
 ```
 
-Next, add the regulatory element to the lanes that are connected with stop lines and must obey the corresponding traffic light:
+Next, add the regulatory element to the lanes that are connected with stop lines and must obey the corresponding traffic light. You need to add the content of the fourth lane in the following code to the corresponding lanelet:
 
 ```
   <relation id='127' action='modify' visible='true' version='1'>
