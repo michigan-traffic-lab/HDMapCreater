@@ -104,7 +104,7 @@ The expected stop line looks like this:
 
 10. Add traffic rules
 
-First, add a regulatory element for each traffic light and its corresponding stop line. Similar to the traffic light, the ID must be a unique ID. Change the value of "ref" to the IDs of corresponding stop line and traffic light.
+First, add a regulatory element for each traffic light and its corresponding stop line. Similar to the traffic light, the ID must be a unique ID. Change the value of "ref" to the IDs of the corresponding stop line and traffic light.
 
 ```
   <relation id='1030' action='modify' visible='true' version='1'>
@@ -115,7 +115,7 @@ First, add a regulatory element for each traffic light and its corresponding sto
   </relation>
 ```
 
-Next, add the regulatory element to the lanes that are connected with stop lines and must obey the corresponding traffic light. You need to add the content of the fourth lane in the following code to the corresponding lanelet:
+Next, add the regulatory element to the lanes approaching the intersection that are connected to stop lines and governed by the corresponding traffic light. Add the following code (shown for the fourth lane) to each corresponding lanelet:
 
 ```
   <relation id='127' action='modify' visible='true' version='1'>
@@ -128,7 +128,7 @@ Next, add the regulatory element to the lanes that are connected with stop lines
   </relation>
 ```
 
-11. After completing editing, check the lanelet list at the right bottom corner. If there are some lanelets consisting of 0 or 1 member, delete them.
+11. After completing editing, check the lanelet list at the bottom right corner. If there are some lanelets consisting of 0 or 1 member, delete them.
 
 
 ## Precautions
