@@ -18,8 +18,8 @@ def parse_args() -> argparse.Namespace:
             "regulatory_element relation members to lanelet relations."
         )
     )
-    parser.add_argument("-i", "--input", help="Input OSM file.")
-    parser.add_argument("-o", "--output", help="Output OSM file.")
+    parser.add_argument("-i", "--input", required=True, help="Input OSM file.")
+    parser.add_argument("-o", "--output", required=True, help="Output OSM file.")
     return parser.parse_args()
 
 
@@ -63,26 +63,6 @@ def collect_way_nodes(
     return way_nodes
 
 
-def collect_way_elements(
-    root: ET.Element, type_value: str | None = None
-) -> dict[str, ET.Element]:
-    ways: dict[str, ET.Element] = {}
-
-    for way in root.findall("way"):
-        if is_deleted(way):
-            continue
-        if type_value is not None and not has_tag(way, "type", type_value):
-            continue
-
-        way_id = way.attrib.get("id")
-        if not way_id:
-            continue
-
-        ways[way_id] = way
-
-    return ways
-
-
 def collect_relation_ids(root: ET.Element) -> set[int]:
     relation_ids: set[int] = set()
 
@@ -98,44 +78,19 @@ def collect_relation_ids(root: ET.Element) -> set[int]:
     return relation_ids
 
 
-def choose_start_relation_id(
-    existing_ids: set[int], requested_id: int | None, direction: str
-) -> int:
-    if requested_id is not None:
-        if requested_id in existing_ids:
-            raise ValueError(f"Requested relation ID already exists: {requested_id}")
-        return requested_id
-
-    if direction == "negative":
-        return min(existing_ids, default=0) - 1
-
-    return max(existing_ids, default=0) + 1
-
-
-def next_relation_id(current_id: int, direction: str) -> int:
-    if direction == "negative":
-        return current_id - 1
-    return current_id + 1
-
-
-def allocate_relation_ids(
-    existing_ids: set[int],
-    count: int,
-    requested_start_id: int | None = None,
-    direction: str = "negative",
-) -> list[int]:
+def allocate_relation_ids(existing_ids: set[int], count: int) -> list[int]:
     if count <= 0:
         return []
 
     relation_ids: list[int] = []
     used_ids = set(existing_ids)
-    current_id = choose_start_relation_id(used_ids, requested_start_id, direction)
+    current_id = min(used_ids, default=0) - 1
 
     while len(relation_ids) < count:
         if current_id not in used_ids:
             relation_ids.append(current_id)
             used_ids.add(current_id)
-        current_id = next_relation_id(current_id, direction)
+        current_id -= 1
 
     return relation_ids
 
@@ -303,45 +258,6 @@ def build_road_lanelet_index(
     )
 
 
-def get_lanelet_boundary_nodes(
-    road_lanelet_index: RoadLaneletIndex, lanelet_id: str, boundary_side: str
-) -> BoundaryNodeKey:
-    if boundary_side == "left":
-        return road_lanelet_index.left_boundary_nodes_by_lanelet_id[lanelet_id]
-    if boundary_side == "right":
-        return road_lanelet_index.right_boundary_nodes_by_lanelet_id[lanelet_id]
-    raise ValueError(f"Unsupported boundary side: {boundary_side}")
-
-
-def other_boundary_side(boundary_side: str) -> str:
-    if boundary_side == "left":
-        return "right"
-    if boundary_side == "right":
-        return "left"
-    raise ValueError(f"Unsupported boundary side: {boundary_side}")
-
-
-def find_unique_next_lanelet_id(
-    current_lanelet_id: str,
-    right_boundary_nodes: BoundaryNodeKey,
-    road_lanelet_index: RoadLaneletIndex,
-    way_id: str,
-) -> str:
-    next_lanelet_ids = [
-        lanelet_id
-        for lanelet_id in road_lanelet_index.lanelet_ids_by_left_boundary_key.get(
-            right_boundary_nodes, []
-        )
-        if lanelet_id != current_lanelet_id
-    ]
-    if len(next_lanelet_ids) != 1:
-        raise ValueError(
-            f"Way {way_id} expected exactly one next road lanelet for boundary "
-            f"{list(right_boundary_nodes)}, found {next_lanelet_ids or 'none'}."
-        )
-    return next_lanelet_ids[0]
-
-
 def build_lanelet_chain_from_left_boundary(
     way_id: str,
     start_node_ref: str,
@@ -374,12 +290,19 @@ def build_lanelet_chain_from_left_boundary(
         if end_node_ref in right_boundary_nodes:
             return lanelet_ids
 
-        current_lanelet_id = find_unique_next_lanelet_id(
-            current_lanelet_id=current_lanelet_id,
-            right_boundary_nodes=right_boundary_nodes,
-            road_lanelet_index=road_lanelet_index,
-            way_id=way_id,
-        )
+        next_lanelet_ids = [
+            lanelet_id
+            for lanelet_id in road_lanelet_index.lanelet_ids_by_left_boundary_key.get(
+                right_boundary_nodes, []
+            )
+            if lanelet_id != current_lanelet_id
+        ]
+        if len(next_lanelet_ids) != 1:
+            raise ValueError(
+                f"Way {way_id} expected exactly one next road lanelet for boundary "
+                f"{list(right_boundary_nodes)}, found {next_lanelet_ids or 'none'}."
+            )
+        current_lanelet_id = next_lanelet_ids[0]
 
 
 def try_build_lanelet_chain_from_boundary(
@@ -388,6 +311,10 @@ def try_build_lanelet_chain_from_boundary(
     end_node_ref: str,
     road_lanelet_index: RoadLaneletIndex,
 ) -> list[str] | None:
+    boundary_nodes_by_side = {
+        "left": road_lanelet_index.left_boundary_nodes_by_lanelet_id,
+        "right": road_lanelet_index.right_boundary_nodes_by_lanelet_id,
+    }
     lanelet_ids: list[str] = []
     visited_lanelet_ids: set[str] = set()
     current_lanelet_id = first_lanelet_id
@@ -400,10 +327,8 @@ def try_build_lanelet_chain_from_boundary(
         visited_lanelet_ids.add(current_lanelet_id)
         lanelet_ids.append(current_lanelet_id)
 
-        next_boundary_side = other_boundary_side(current_start_boundary_side)
-        next_boundary_nodes = get_lanelet_boundary_nodes(
-            road_lanelet_index, current_lanelet_id, next_boundary_side
-        )
+        next_boundary_side = "right" if current_start_boundary_side == "left" else "left"
+        next_boundary_nodes = boundary_nodes_by_side[next_boundary_side][current_lanelet_id]
         if end_node_ref in next_boundary_nodes:
             return lanelet_ids
 
@@ -421,10 +346,7 @@ def try_build_lanelet_chain_from_boundary(
         matching_boundary_sides = [
             boundary_side
             for boundary_side in ("left", "right")
-            if get_lanelet_boundary_nodes(
-                road_lanelet_index, next_lanelet_id, boundary_side
-            )
-            == next_boundary_nodes
+            if boundary_nodes_by_side[boundary_side][next_lanelet_id] == next_boundary_nodes
         ]
         if len(matching_boundary_sides) != 1:
             return None
@@ -439,13 +361,16 @@ def build_lanelet_chain_from_boundary_sharing(
     end_node_ref: str,
     road_lanelet_index: RoadLaneletIndex,
 ) -> list[str]:
+    boundary_nodes_by_side = {
+        "left": road_lanelet_index.left_boundary_nodes_by_lanelet_id,
+        "right": road_lanelet_index.right_boundary_nodes_by_lanelet_id,
+    }
     first_lanelet_ids = sorted(
         {
             lanelet_id
             for lanelet_id in road_lanelet_index.relation_by_id
-            if start_node_ref in road_lanelet_index.left_boundary_nodes_by_lanelet_id[lanelet_id]
-            or start_node_ref
-            in road_lanelet_index.right_boundary_nodes_by_lanelet_id[lanelet_id]
+            if start_node_ref in boundary_nodes_by_side["left"][lanelet_id]
+            or start_node_ref in boundary_nodes_by_side["right"][lanelet_id]
         },
         key=numeric_sort_key,
     )
@@ -454,9 +379,7 @@ def build_lanelet_chain_from_boundary_sharing(
     seen_chains: set[tuple[str, ...]] = set()
     for first_lanelet_id in first_lanelet_ids:
         for boundary_side in ("left", "right"):
-            if start_node_ref not in get_lanelet_boundary_nodes(
-                road_lanelet_index, first_lanelet_id, boundary_side
-            ):
+            if start_node_ref not in boundary_nodes_by_side[boundary_side][first_lanelet_id]:
                 continue
             lanelet_ids = try_build_lanelet_chain_from_boundary(
                 first_lanelet_id=first_lanelet_id,
@@ -517,11 +440,19 @@ def build_lanelet_coverage_by_way_type(
     road_lanelet_index: RoadLaneletIndex,
 ) -> dict[str, list[str]]:
     lanelet_list_by_way_id: dict[str, list[str]] = {}
-    ways = collect_way_elements(root, type_value)
+    ways: list[tuple[str, ET.Element]] = []
 
-    for way_id in sorted(ways, key=numeric_sort_key):
+    for way in root.findall("way"):
+        if is_deleted(way) or not has_tag(way, "type", type_value):
+            continue
+        way_id = way.attrib.get("id")
+        if not way_id:
+            continue
+        ways.append((way_id, way))
+
+    for way_id, way in sorted(ways, key=lambda item: numeric_sort_key(item[0])):
         lanelet_list_by_way_id[way_id] = find_covered_lanelet_ids_for_way(
-            way=ways[way_id],
+            way=way,
             way_nodes=way_nodes,
             road_lanelet_index=road_lanelet_index,
         )
@@ -592,6 +523,11 @@ def create_missing_traffic_light_relations(
             stop_line_id
         )
 
+    stop_line_ids_by_lanelet_id: dict[str, set[str]] = {}
+    for stop_line_id, lanelet_ids in stop_line_lanelets_by_way_id.items():
+        for lanelet_id in lanelet_ids:
+            stop_line_ids_by_lanelet_id.setdefault(lanelet_id, set()).add(stop_line_id)
+
     new_pairs: list[tuple[str, str]] = []
     for traffic_light_id in sorted(traffic_light_lanelets_by_way_id, key=numeric_sort_key):
         existing_stop_line_ids = sorted(
@@ -607,13 +543,12 @@ def create_missing_traffic_light_relations(
         if traffic_light_id in relation_id_by_traffic_light:
             continue
 
-        traffic_light_lanelet_ids = set(traffic_light_lanelets_by_way_id[traffic_light_id])
         matched_stop_line_ids = sorted(
-            [
+            {
                 stop_line_id
-                for stop_line_id, stop_line_lanelet_ids in stop_line_lanelets_by_way_id.items()
-                if traffic_light_lanelet_ids.intersection(stop_line_lanelet_ids)
-            ],
+                for lanelet_id in traffic_light_lanelets_by_way_id[traffic_light_id]
+                for stop_line_id in stop_line_ids_by_lanelet_id.get(lanelet_id, set())
+            },
             key=numeric_sort_key,
         )
         if len(matched_stop_line_ids) != 1:
@@ -729,9 +664,13 @@ def main() -> int:
     args = parse_args()
     input_path = Path(args.input)
     output_path = Path(args.output)
-    assert (
-        input_path != output_path
-    ), "Input and output paths must be different to avoid accidentally overwrite."
+
+    if input_path == output_path:
+        print(
+            "Input and output paths must be different to avoid accidental overwrite.",
+            file=sys.stderr,
+        )
+        return 2
 
     if not input_path.is_file():
         print(f"Input file not found: {input_path}", file=sys.stderr)
