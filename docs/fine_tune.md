@@ -48,7 +48,7 @@ Add or remove nodes to make turning lanelets smooth. For right-turn lanelets, al
 
 8. Set attributes
 
-Set the "subtype" attribute of all lanelets inside the intersection to "intersection". Add the "turn_direction" to the turning lanelets and set it to "left" or "right". Set the "subtype" attribute of all crosswalks to "crosswalk".
+Set the "subtype" attribute of all lanelets inside the intersection to "intersection". The intersection means the area bounded by the stop lines. Add the "turn_direction" to the turning lanelets and set it to "left" or "right". Set the "subtype" attribute of all crosswalks to "crosswalk".
 
 ![set_attributes](../fig/fine_tune/set_attributes.png)
 
