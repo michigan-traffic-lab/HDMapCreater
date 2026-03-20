@@ -80,7 +80,7 @@ Press `Ctrl + S` to save. Upon completion, the output should look like this:
 
 ![corner_case_incorrect_connection](../fig/edit_topology/corner_case_incorrect_connection.png)
 
-4. Make sure the adjacent lanelets share the same boundary. Sometimes, connections for through lanes are incorrect. If you use step 4 to add a connection, you may find that adjacent connections do not share the same boundary, as shown in the figure below. In this case, it is better to use the method in step 3 to add an adjacent left/right lanelet instead.
+4. Make sure the adjacent lanelets share the same boundary. Sometimes, connections for through lanes are incorrect. If you use step 5 to add a connection, you may find that adjacent connections do not share the same boundary, as shown in the figure below. In this case, it is better to use the method in step 4 to add an adjacent left/right lanelet instead.
 
 ![incorrect_connection](../fig/edit_topology/incorrect_connection.png)
 
