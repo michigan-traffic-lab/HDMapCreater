@@ -83,3 +83,7 @@ Press `Ctrl + S` to save. Upon completion, the output should look like this:
 4. Make sure the adjacent lanelets share the same boundary. Sometimes, connections for through lanes are incorrect. If you use step 4 to add a connection, you may find that adjacent connections do not share the same boundary, as shown in the figure below. In this case, it is better to use the method in step 3 to add an adjacent left/right lanelet instead.
 
 ![incorrect_connection](../fig/edit_topology/incorrect_connection.png)
+
+5. If you need to add an adjacent left/right lane with opposite direction to an existing lanelet, click "Lanelet operations" first. Then choose the existing lanelet, click "Adjacent left/right", uncheck "Adjacent same direction", and click "Create adjacent to [1]".
+
+![add_opposite_adjacent_lane](../fig/edit_topology/add_opposite_adjacent_lane.png)

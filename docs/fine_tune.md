@@ -48,13 +48,13 @@ Click and drag lane boundaries and nodes to align them with the satellite map. I
 
 7. Smooth the turning lanelets
 
-Add or remove nodes to make turning lanelets smooth. For right-turn lanelets, align the right boundaries with the road edges. For left-turn lanelets, ensure the shape looks reasonable.
+Add or remove nodes to make turning lanelets smooth. For right-turn lanelets, align the right boundaries with the road edges. For left-turn lanelets, ensure the shape looks reasonable. To highlight the boundaries of a lanelet, you can click the lanelet in the second window on the right or double click the lanelet in the bottom window on the right.
 
 ![turning_lanelets](../fig/fine_tune/turning_lanelets.png)
 
 8. Set attributes
 
-Set the "subtype" attribute of all lanelets inside the intersection to "intersection". Add the "turn_direction" to the turning lanelets and set it to "left" or "right". Set the "subtype" attribute of all crosswalks to "crosswalk".
+Set the "subtype" attribute of all lanelets inside the intersection to "intersection". The intersection means the area bounded by the stop lines. Add the "turn_direction" to the turning lanelets and set it to "left" or "right". Set the "subtype" attribute of all crosswalks to "crosswalk".
 
 ![set_attributes](../fig/fine_tune/set_attributes.png)
 
@@ -66,7 +66,7 @@ You can add them as boundaries by clicking ![draw_nodes](../fig/fine_tune/draw_n
 
 ![add_new_way_using_ui](../fig/fine_tune/add_new_way_using_ui.png)
 
-To work around this, add boundaries directly in the raw OSM file (line 1565 - 1569):
+To work around this, add a new boundary directly in the raw OSM file (line 1565 - 1569). The 'id' must be a unique ID, which is different from all existing ID, including nodes, ways (boundaries), and relationships (lanelets). The 'nd' represent the nodes that consist of the boundary. You need to change the value of 'ref' to the correct node ID. The "type" should be set to "traffic_light".
 ```
 <way id='1023' action='modify' visible='true' version='1'>
     <nd ref='20' />
@@ -75,7 +75,7 @@ To work around this, add boundaries directly in the raw OSM file (line 1565 - 15
   </way>
 ```
 
-After the new traffic lights are added, set the "type" tag to "traffic_light". The traffic lights should consist of the end nodes of the lanelets approaching the intersection. When defining the way nodes, always order them from left to right. The way should align with the bottom edge of the stop line as seen in the satellite map, as shown in the following figure. The number of traffic light ways should match the number of distinct traffic signals at the intersection. For example, if there is a left-turn signal and a through signal, use three nodes to define two separate ways: the left and middle nodes cover the left-turn lane, and the middle and right nodes cover the remaining lanes:
+The traffic lights should consist of the end nodes of the lanelets approaching the intersection. When defining the way nodes, always order them from left to right. The way should align with the bottom edge of the stop line as seen in the satellite map, as shown in the following figure. The number of traffic light ways should match the number of distinct traffic signals at the intersection. For example, if there is a left-turn signal and a through signal, use three nodes to define two separate ways: the left and middle nodes cover the left-turn lane, and the middle and right nodes cover the remaining lanes:
 
 ```
   <way id='1029' action='modify' visible='true' version='1'>
@@ -110,7 +110,7 @@ The expected stop line looks like this:
 
 10. Add traffic rules
 
-First, add a regulatory element for each traffic light and its corresponding stop line:
+First, add a regulatory element for each traffic light and its corresponding stop line. Similar to the traffic light, the ID must be a unique ID. Change the value of "ref" to the IDs of the corresponding stop line and traffic light.
 
 ```
   <relation id='1030' action='modify' visible='true' version='1'>
@@ -121,7 +121,7 @@ First, add a regulatory element for each traffic light and its corresponding sto
   </relation>
 ```
 
-Next, add the regulatory element to the lanes that are connected with stop lines and must obey the corresponding traffic light:
+Next, add the regulatory element to the lanes approaching the intersection that are connected to stop lines and governed by the corresponding traffic light. Add the following code (shown for the fourth lane) to each corresponding lanelet:
 
 ```
   <relation id='127' action='modify' visible='true' version='1'>
@@ -134,9 +134,12 @@ Next, add the regulatory element to the lanes that are connected with stop lines
   </relation>
 ```
 
+11. After completing editing, check the lanelet list at the bottom right corner. If there are some lanelets consisting of 0 or 1 member, delete them.
+
+
 ## Precautions
 
-1. Sometimes, a single node is split into two overlapping nodes at the same location that are not connected, as shown below (one node has been moved slightly for clarity). To fix this, click ![draw_nodes](../fig/fine_tune/draw_nodes.png) (`Draw nodes`), click one of the duplicate nodes, and then click the other to connect them.
+1. Sometimes, a single node is split into two overlapping nodes at the same location that are not connected, as shown below (one node has been moved slightly for clarity). To fix this, hold "Ctrl" and click these two nodes. Then press "m" to merge them.
 
 ![disconnection](../fig/fine_tune/disconnection.png)
 
@@ -144,6 +147,11 @@ Next, add the regulatory element to the lanes that are connected with stop lines
 
 3. If you are not sure about the traffic light settings, you can check it using the street view of Google Maps.
 
-3. Never check "Upload" when saving the file.
+4. Never check "Upload" when saving the file.
 
 ![uncheck_upload](../fig/fine_tune/uncheck_upload.png)
+
+
+5. Each lanelet associated with the traffic light should be long enough to span the length of several vehicles.
+
+![lanelet_length](../fig/fine_tune/lanelet_length.png)
