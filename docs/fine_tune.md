@@ -141,6 +141,11 @@ Next, add the regulatory element to the lanes approaching the intersection that 
 
 3. If you are not sure about the traffic light settings, you can check it using the street view of Google Maps.
 
-3. Never check "Upload" when saving the file.
+4. Never check "Upload" when saving the file.
 
 ![uncheck_upload](../fig/fine_tune/uncheck_upload.png)
+
+
+5. Each lanelet associated with the traffic light should be long enough to span the length of several vehicles.
+
+![lanelet_length](../fig/fine_tune/lanelet_length.png)
