@@ -133,7 +133,7 @@ Next, add the regulatory element to the lanes approaching the intersection that 
 
 ## Precautions
 
-1. Sometimes, a single node is split into two overlapping nodes at the same location that are not connected, as shown below (one node has been moved slightly for clarity). To fix this, click ![draw_nodes](../fig/fine_tune/draw_nodes.png) (`Draw nodes`), click one of the duplicate nodes, and then click the other to connect them.
+1. Sometimes, a single node is split into two overlapping nodes at the same location that are not connected, as shown below (one node has been moved slightly for clarity). To fix this, hold "Ctrl" and click these two nodes. Then press "m" to merge them.
 
 ![disconnection](../fig/fine_tune/disconnection.png)
 
