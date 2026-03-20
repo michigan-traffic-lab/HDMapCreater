@@ -110,7 +110,12 @@ The expected stop line looks like this:
 
 10. Add traffic rules
 
-First, add a regulatory element for each traffic light and its corresponding stop line. Similar to the traffic light, the ID must be a unique ID. Change the value of "ref" to the IDs of the corresponding stop line and traffic light.
+Run `python create_traffic_rules.py --input example/fuller_huronPkwy/lanelet2.osm --output example/fuller_huronPkwy/lanelet2_with_traffic_rules.osm` to automatically add traffic rules based on the traffic light and stop line you just created. 
+
+After running the script, please use JOSM to open the output file and check if the traffic rules are correctly added. 
+
+The traffic rules should be added as regulatory elements in the lanelet relations. If you find any missing or incorrect traffic rules, you can add or modify them manually in JOSM:
+First, add a regulatory element for each traffic light and its corresponding stop line:
 
 ```
   <relation id='1030' action='modify' visible='true' version='1'>
