@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 """Create traffic-light regulatory relations and attach them to road lanelets."""
 
-from __future__ import annotations
-
 import argparse
 import sys
 import xml.etree.ElementTree as ET
@@ -41,15 +39,11 @@ def numeric_sort_key(value: str) -> tuple[int, int | str]:
         return (1, value)
 
 
-def collect_way_nodes(
-    root: ET.Element, type_value: str | None = None
-) -> dict[str, list[str]]:
+def collect_way_nodes(root: ET.Element) -> dict[str, list[str]]:
     way_nodes: dict[str, list[str]] = {}
 
     for way in root.findall("way"):
         if is_deleted(way):
-            continue
-        if type_value is not None and not has_tag(way, "type", type_value):
             continue
 
         way_id = way.attrib.get("id")
@@ -61,21 +55,6 @@ def collect_way_nodes(
             way_nodes[way_id] = node_refs
 
     return way_nodes
-
-
-def collect_relation_ids(root: ET.Element) -> set[int]:
-    relation_ids: set[int] = set()
-
-    for relation in root.findall("relation"):
-        relation_id = relation.attrib.get("id")
-        if relation_id is None:
-            continue
-        try:
-            relation_ids.add(int(relation_id))
-        except ValueError:
-            continue
-
-    return relation_ids
 
 
 def allocate_relation_ids(existing_ids: set[int], count: int) -> list[int]:
@@ -146,22 +125,6 @@ def collect_existing_traffic_light_relations(
     return pairs, relation_id_by_traffic_light
 
 
-def get_way_end_nodes(
-    way: ET.Element, way_nodes: dict[str, list[str]]
-) -> tuple[str, str]:
-    way_id = way.attrib.get("id")
-    if not way_id:
-        raise ValueError("Encountered a way without an id.")
-
-    node_refs = way_nodes.get(way_id)
-    if node_refs is None:
-        raise ValueError(f"Way {way_id} is missing or deleted.")
-    if len(node_refs) < 2:
-        raise ValueError(f"Way {way_id} must contain at least two nodes.")
-
-    return node_refs[0], node_refs[-1]
-
-
 BoundaryNodeKey = tuple[str, ...]
 
 
@@ -173,10 +136,6 @@ class RoadLaneletIndex:
     lanelet_ids_by_left_boundary_node: dict[str, list[str]]
     lanelet_ids_by_left_boundary_key: dict[BoundaryNodeKey, list[str]]
     lanelet_ids_by_boundary_key: dict[BoundaryNodeKey, list[str]]
-
-
-def sort_unique_ids(values: list[str]) -> list[str]:
-    return sorted(set(values), key=numeric_sort_key)
 
 
 def get_unique_way_member_ref(relation: ET.Element, role: str) -> str:
@@ -242,11 +201,11 @@ def build_road_lanelet_index(
         lanelet_ids_by_boundary_key.setdefault(right_nodes, []).append(lanelet_id)
 
     for lanelet_ids in lanelet_ids_by_left_boundary_node.values():
-        lanelet_ids[:] = sort_unique_ids(lanelet_ids)
+        lanelet_ids[:] = sorted(set(lanelet_ids), key=numeric_sort_key)
     for lanelet_ids in lanelet_ids_by_left_boundary_key.values():
-        lanelet_ids[:] = sort_unique_ids(lanelet_ids)
+        lanelet_ids[:] = sorted(set(lanelet_ids), key=numeric_sort_key)
     for lanelet_ids in lanelet_ids_by_boundary_key.values():
-        lanelet_ids[:] = sort_unique_ids(lanelet_ids)
+        lanelet_ids[:] = sorted(set(lanelet_ids), key=numeric_sort_key)
 
     return RoadLaneletIndex(
         relation_by_id=relation_by_id,
@@ -415,7 +374,14 @@ def find_covered_lanelet_ids_for_way(
     if not way_id:
         raise ValueError("Encountered a way without an id.")
 
-    start_node_ref, end_node_ref = get_way_end_nodes(way, way_nodes)
+    node_refs = way_nodes.get(way_id)
+    if node_refs is None:
+        raise ValueError(f"Way {way_id} is missing or deleted.")
+    if len(node_refs) < 2:
+        raise ValueError(f"Way {way_id} must contain at least two nodes.")
+
+    start_node_ref = node_refs[0]
+    end_node_ref = node_refs[-1]
 
     try:
         return build_lanelet_chain_from_left_boundary(
@@ -559,10 +525,13 @@ def create_missing_traffic_light_relations(
 
         new_pairs.append((matched_stop_line_ids[0], traffic_light_id))
 
-    new_relation_ids = allocate_relation_ids(
-        collect_relation_ids(root),
-        len(new_pairs),
-    )
+    existing_relation_ids = {
+        int(relation_id)
+        for relation in root.findall("relation")
+        for relation_id in [relation.attrib.get("id")]
+        if relation_id is not None and relation_id.lstrip("-").isdigit()
+    }
+    new_relation_ids = allocate_relation_ids(existing_relation_ids, len(new_pairs))
 
     print(f"Road lanelet relations indexed: {len(road_lanelet_index.relation_by_id)}")
     print(f"Traffic-light ways: {len(traffic_light_lanelets_by_way_id)}")
@@ -628,38 +597,6 @@ def add_regulatory_members_to_lanelets(
     return links_added
 
 
-def process_osm(
-    input_path: Path,
-    output_path: Path,
-) -> None:
-    tree = ET.parse(input_path)
-    root = tree.getroot()
-
-    print(f"Input: {input_path}")
-    print()
-    (
-        traffic_light_lanelets_by_way_id,
-        relation_id_by_traffic_light,
-        road_lanelet_index,
-    ) = create_missing_traffic_light_relations(root=root)
-    print()
-    add_regulatory_members_to_lanelets(
-        traffic_light_lanelets_by_way_id=traffic_light_lanelets_by_way_id,
-        relation_id_by_traffic_light=relation_id_by_traffic_light,
-        road_lanelet_index=road_lanelet_index,
-    )
-
-    try:
-        ET.indent(tree, space="  ")
-    except AttributeError:
-        pass
-
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    tree.write(output_path, encoding="UTF-8", xml_declaration=True)
-
-    print(f"Output: {output_path}")
-
-
 def main() -> int:
     args = parse_args()
     input_path = Path(args.input)
@@ -677,10 +614,32 @@ def main() -> int:
         return 2
 
     try:
-        process_osm(
-            input_path=input_path,
-            output_path=output_path,
+        tree = ET.parse(input_path)
+        root = tree.getroot()
+
+        print(f"Input: {input_path}")
+        print()
+        (
+            traffic_light_lanelets_by_way_id,
+            relation_id_by_traffic_light,
+            road_lanelet_index,
+        ) = create_missing_traffic_light_relations(root=root)
+        print()
+        add_regulatory_members_to_lanelets(
+            traffic_light_lanelets_by_way_id=traffic_light_lanelets_by_way_id,
+            relation_id_by_traffic_light=relation_id_by_traffic_light,
+            road_lanelet_index=road_lanelet_index,
         )
+
+        try:
+            ET.indent(tree, space="  ")
+        except AttributeError:
+            pass
+
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        tree.write(output_path, encoding="UTF-8", xml_declaration=True)
+
+        print(f"Output: {output_path}")
     except ValueError as error:
         print(str(error), file=sys.stderr)
         return 2
