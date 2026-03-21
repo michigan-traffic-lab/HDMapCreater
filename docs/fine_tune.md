@@ -24,6 +24,12 @@ Click `Imagery` → `Bing aerial imagery` to enable the satellite map. If it doe
 
 4. Delete the extra nodes (optional)
 
+You can use the script `prune_lanelet2_geometry_nodes.py` to automatically delete nodes that are too close to each other.
+`--min-distance` specifies the minimum distance (in meter) between nodes.
+
+```python prune_lanelet2_geometry_nodes.py lanelet2.osm -o lanelet2_pruned.osm --min-distance 2```
+
+You can manually delete some nodes as well. Here is the guide for manual node deletion in JOSM:
 There are often too many nodes (yellow squares) to clearly distinguish the lane boundaries (grey lines) and lanelets (each consisting of several lane boundaries). If the nodes are not in the correct locations and too many would need to be moved, it is recommended to delete the excess nodes first. Click and drag to select multiple nodes, then delete them. If the warning shown below appears, cancel the operation — it indicates that lane boundaries or lanelets may be inadvertently deleted.
 
 ![del_warning](../fig/fine_tune/del_warning.png)
@@ -104,7 +110,12 @@ The expected stop line looks like this:
 
 10. Add traffic rules
 
-First, add a regulatory element for each traffic light and its corresponding stop line. Similar to the traffic light, the ID must be a unique ID. Change the value of "ref" to the IDs of the corresponding stop line and traffic light.
+Run `python create_traffic_rules.py --input example/fuller_huronPkwy/lanelet2.osm --output example/fuller_huronPkwy/lanelet2_with_traffic_rules.osm` to automatically add traffic rules based on the traffic light and stop line you just created. 
+
+After running the script, please use JOSM to open the output file and check if the traffic rules are correctly added. 
+
+The traffic rules should be added as regulatory elements in the lanelet relations. If you find any missing or incorrect traffic rules, you can add or modify them manually in JOSM:
+First, add a regulatory element for each traffic light and its corresponding stop line:
 
 ```
   <relation id='1030' action='modify' visible='true' version='1'>
