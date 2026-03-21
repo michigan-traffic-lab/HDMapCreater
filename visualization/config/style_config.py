@@ -34,8 +34,17 @@ class StyleConfig:
     future_traj_color: Tuple[float, float, float] = FUTURE_TRAJ_COLOR
     pred_traj_color: Tuple[float, float, float] = PRED_TRAJ_COLOR
     arrow_color: Tuple[float, float, float] = ARROW_COLOR
+    traffic_light_red_color: Tuple[float, float, float] = TRAFFIC_LIGHT_RED_COLOR
+    traffic_light_yellow_color: Tuple[float, float, float] = TRAFFIC_LIGHT_YELLOW_COLOR
+    traffic_light_green_color: Tuple[float, float, float] = TRAFFIC_LIGHT_GREEN_COLOR
+    traffic_light_flashing_yellow_off_color: Tuple[float, float, float] = TRAFFIC_LIGHT_FLASHING_YELLOW_OFF_COLOR
     traffic_light_default_color: Tuple[float, float, float] = TRAFFIC_LIGHT_DEFAULT_COLOR
     intersection_area_color: Tuple[float, float, float] = INTERSECTION_AREA_COLOR
+    # Lanelet type colors (subtype/turn_direction based)
+    lanelet_intersection_color: Tuple[float, float, float] = LANELET_INTERSECTION_COLOR
+    lanelet_left_turn_color: Tuple[float, float, float] = LANELET_LEFT_TURN_COLOR
+    lanelet_right_turn_color: Tuple[float, float, float] = LANELET_RIGHT_TURN_COLOR
+    lanelet_crosswalk_color: Tuple[float, float, float] = LANELET_CROSSWALK_COLOR
     # set color for each roaduser
     roaduser_colors: Dict[Any, Tuple[float, float, float]] = field(default_factory=dict)
     
@@ -82,7 +91,10 @@ class StyleConfig:
         color_attrs = [
             'map_color', 'roaduser_color', 'highlight_color',
             'hist_traj_color', 'future_traj_color', 'pred_traj_color',
-            'arrow_color', 'traffic_light_default_color'
+            'arrow_color',
+            'traffic_light_red_color', 'traffic_light_yellow_color',
+            'traffic_light_green_color', 'traffic_light_flashing_yellow_off_color',
+            'traffic_light_default_color'
         ]
         for attr in color_attrs:
             color = getattr(self, attr)
@@ -113,7 +125,10 @@ class StyleConfig:
         color_attrs = [
             'map_color', 'roaduser_color', 'highlight_color',
             'hist_traj_color', 'future_traj_color', 'pred_traj_color',
-            'arrow_color', 'traffic_light_default_color'
+            'arrow_color',
+            'traffic_light_red_color', 'traffic_light_yellow_color',
+            'traffic_light_green_color', 'traffic_light_flashing_yellow_off_color',
+            'traffic_light_default_color'
         ]
         for attr in color_attrs:
             if attr in config_dict and isinstance(config_dict[attr], list):

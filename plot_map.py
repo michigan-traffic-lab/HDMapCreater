@@ -5,6 +5,7 @@ from lanelet2.core import GPSPoint
 
 from map.map import load_map
 from visualization.config import render_config
+from visualization.config.style_config import StyleConfig
 from visualization.plotting import plot_map, plot_traffic_lights
 
 
@@ -70,10 +71,18 @@ args = parser.parse_args()
 # Load the lanelet2 map
 map_obj = load_map(args.map_path, google_maps_api_key=args.google_maps_api_key)
 
+style = StyleConfig(
+    map_alpha=0.8,
+    lanelet_intersection_color=(0.5, 0.5, 1.0),   # light blue
+    lanelet_left_turn_color=(1.0, 0.5, 0.0),       # orange
+    lanelet_right_turn_color=(0.0, 0.8, 0.4),      # green
+    lanelet_crosswalk_color=(0.8, 0.8, 0.0),       # yellow
+)
+
 fig, ax = plt.subplots(figsize=(6, 6))
 xlim, ylim, background_corners = determine_xy_lim(map_obj)
-plot_map(ax, map_obj, extent=xlim + ylim, background_corners=background_corners)
-plot_traffic_lights(ax, map_obj)
+plot_map(ax, map_obj, extent=xlim + ylim, background_corners=background_corners, style=style)
+plot_traffic_lights(ax, map_obj, style=style)
 plt.xlim(xlim)
 plt.ylim(ylim)
 plt.tight_layout()

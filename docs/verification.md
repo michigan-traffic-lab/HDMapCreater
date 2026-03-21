@@ -52,3 +52,5 @@ As shown above, the crosswalks on the west and south sides are not in the correc
 The complete map should look like this:
 
 ![fuller_huronPkwy](../example/fuller_huronPkwy.png)
+
+The blue lines represent the straight lanelets within the intersection, the orange lines represent the left-turn lanelets withint the intersection, the green lines represent the right-turn lanelets within the intersectin, the yellow lines represent the crosswalks, and the black lines represent the lanelets outside the intersection.

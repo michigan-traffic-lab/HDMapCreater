@@ -61,6 +61,7 @@ class RenderConfig:
     # Traffic elements
     # ========================================================================
     show_traffic_lights: bool = True
+    flashing_yellow_frequency: int = 10  # frames per flash
 
     # ========================================================================
     # Traffic elements

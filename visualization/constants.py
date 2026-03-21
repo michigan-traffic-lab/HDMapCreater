@@ -7,12 +7,20 @@ from typing import Tuple
 # Colors (RGB tuples, values 0-1)
 # ============================================================================
 MAP_COLOR: Tuple[float, float, float] = (0, 0, 0)  # Black
+LANELET_INTERSECTION_COLOR: Tuple[float, float, float] = (0.1, 0.3, 1.0)   # Blue
+LANELET_LEFT_TURN_COLOR: Tuple[float, float, float] = (1.0, 0.45, 0.0)    # Orange
+LANELET_RIGHT_TURN_COLOR: Tuple[float, float, float] = (0.0, 0.75, 0.2)   # Green
+LANELET_CROSSWALK_COLOR: Tuple[float, float, float] = (1.0, 0.85, 0.0)    # Yellow
 ROADUSER_COLOR: Tuple[float, float, float] = (0, 1, 0)  # Green
 HIGHLIGHT_COLOR: Tuple[float, float, float] = (1, 0, 0)  # Red
 HIST_TRAJ_COLOR: Tuple[float, float, float] = (0, 0, 0)  # Black
 FUTURE_TRAJ_COLOR: Tuple[float, float, float] = (0, 0, 1)  # Blue
 PRED_TRAJ_COLOR: Tuple[float, float, float] = (0, 1, 0)  # Green
 ARROW_COLOR: Tuple[float, float, float] = (0, 0, 0)  # Black
+TRAFFIC_LIGHT_RED_COLOR: Tuple[float, float, float] = (1, 0, 0)  # Red
+TRAFFIC_LIGHT_YELLOW_COLOR: Tuple[float, float, float] = (1.0, 0.843, 0.0)  # Gold
+TRAFFIC_LIGHT_GREEN_COLOR: Tuple[float, float, float] = (0, 1, 0)  # Green
+TRAFFIC_LIGHT_FLASHING_YELLOW_OFF_COLOR: Tuple[float, float, float] = (0.4, 0.337, 0.0)  # Dimmed gold
 TRAFFIC_LIGHT_DEFAULT_COLOR: Tuple[float, float, float] = (1, 1, 1)  # White
 INTERSECTION_AREA_COLOR: Tuple[float, float, float] = (1, 0, 0)  # Red
 

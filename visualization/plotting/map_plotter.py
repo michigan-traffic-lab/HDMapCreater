@@ -1,6 +1,7 @@
 """
 Map and road network plotting.
 """
+import matplotlib.pyplot as plt
 from typing import List, Optional
 import numpy as np
 import cv2
@@ -32,7 +33,7 @@ def plot_map(
         style = StyleConfig()
     
     # Plot background image if available
-    if extent and len(extent) == 4 and map_obj.background_img is not None:
+    if extent and len(extent) == 4 and map_obj.background_img is not None and background_corners is not None:
         # ax.imshow(map_obj.background_img, extent=extent, zorder=0)
         img = np.array(map_obj.background_img.convert('RGBA'))
         H, W = img.shape[:2]
@@ -70,14 +71,31 @@ def plot_map(
     if not map_obj.base_map():
         return
     
+    def _lanelet_color(lanelet):
+        """Return the color for a lanelet based on its subtype and turn_direction."""
+        if lanelet.id in config.highlight_lane_ids:
+            return style.highlight_color
+        attrs = lanelet.attributes
+        subtype = attrs["subtype"] if "subtype" in attrs else ""
+        turn_direction = attrs["turn_direction"] if "turn_direction" in attrs else ""
+        if subtype == "crosswalk":
+            return style.lanelet_crosswalk_color
+        if subtype in ("intersection", "roundabout"):
+            if turn_direction == "left":
+                return style.lanelet_left_turn_color
+            if turn_direction == "right":
+                return style.lanelet_right_turn_color
+            return style.lanelet_intersection_color
+        if subtype == "enter":
+            return style.lanelet_left_turn_color
+        if subtype == "exit":
+            return style.lanelet_right_turn_color
+        return style.map_color
+
     # Helper function to plot lane lines
-    def _plot_lines(lane_points, lanelet_id):
+    def _plot_lines(lane_points, lanelet):
         """Plot a single lane line."""
-        if lanelet_id in config.highlight_lane_ids:
-            color = style.highlight_color
-        else:
-            color = style.map_color
-        
+        color = _lanelet_color(lanelet)
         ax.plot(*zip(*lane_points), color=color, zorder=1, alpha=style.map_alpha)
     
     # Plot each lanelet
@@ -91,15 +109,15 @@ def plot_map(
         # Plot boundaries and centerline
         if config.draw_left:
             lane_points = [[point.x, point.y] for point in lanelet.leftBound]
-            _plot_lines(lane_points, lanelet.id)
-        
+            _plot_lines(lane_points, lanelet)
+
         if config.draw_right:
             lane_points = [[point.x, point.y] for point in lanelet.rightBound]
-            _plot_lines(lane_points, lanelet.id)
-        
+            _plot_lines(lane_points, lanelet)
+
         if config.draw_center:
             lane_points = [[point.x, point.y] for point in lanelet.centerline]
-            _plot_lines(lane_points, lanelet.id)
+            _plot_lines(lane_points, lanelet)
         
         # Plot direction arrows if requested
         if config.show_arrows and len(lanelet.centerline) > 1:
